@@ -1,0 +1,21 @@
+{
+  "name": "backendcatalogovehiculos",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nachonazar/backendCatalogoVehiculos.git"
+  },
+  "keywords": [],
+  "author": "Nazar Ignacio",
+  "license": "MIT",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/nachonazar/backendCatalogoVehiculos/issues"
+  },
+  "homepage": "https://github.com/nachonazar/backendCatalogoVehiculos#readme",
+  "description": "Backend de Catalogo de Vehiculos"
+}
