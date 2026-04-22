@@ -51,3 +51,16 @@ export const editarVehiculosPorId = async (req, res) => {
     res.status(500).json({ mensaje: "Error al editar el vehiculo" });
   }
 };
+
+export const borrarVehiculosPorId = async (req, res) => {
+  try {
+    const vehiculoBorrado = await Vehiculo.findByIdAndDelete(req.params.id);
+    if (!vehiculoBorrado) {
+      return res.status(404).json({ mensaje: "Vehiculo no encontrado" });
+    }
+    res.status(200).json({ mensaje: "Vehiculo eliminado correctamente" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: "Error al eliminar el vehiculo" });
+  }
+};
