@@ -8,6 +8,7 @@ const vehiculoSchema = new Schema({
     maxlength: 100,
   },
   modelo: {
+    type: String,
     required: true,
     minlength: 2,
     maxlength: 100,
