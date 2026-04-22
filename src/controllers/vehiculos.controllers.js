@@ -38,3 +38,16 @@ export const leerVehiculosPorId = async (req, res) => {
     res.status(500).json({ mensaje: "Error al leer el vehiculo" });
   }
 };
+
+export const editarVehiculosPorId = async (req, res) => {
+  try {
+    const vehiculoModificado = await Vehiculo.findByIdAndUpdate(req.params.id, req.body);
+    if (!vehiculoModificado) {
+      return res.status(404).json({ mensaje: "Vehiculo no encontrado" });
+    }
+    res.status(200).json({ mensaje: "Vehiculo actualizado correctamente" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: "Error al editar el vehiculo" });
+  }
+};
