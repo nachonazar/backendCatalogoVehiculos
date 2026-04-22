@@ -25,3 +25,16 @@ export const crearVehiculo = async (req, res) => {
     res.status(500).json({ mensaje: "Error al crear el vehiculo" });
   }
 };
+
+export const leerVehiculosPorId = async (req, res) => {
+  try {
+    const vehiculoBuscado = await Vehiculo.findById(req.params.id);
+    if (!vehiculoBuscado) {
+      return res.status(404).json({ mensaje: "Vehiculo no encontrado" });
+    }
+    res.status(200).json(vehiculoBuscado);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: "Error al leer el vehiculo" });
+  }
+};
