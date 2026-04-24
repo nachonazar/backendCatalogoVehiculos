@@ -1,9 +1,11 @@
 import mongoose from "mongoose";
 
-mongoose.connect(process.env.MONGODB)
-  .then(() => {
+try {
+  mongoose.connect(process.env.MONGODB).then(() => {
     console.info("BD conectada");
-  })
-  .catch((error) => {
-    console.error("Error al conectar BD:", error.message);
   });
+} catch (error) {
+  console.error(error);
+}
+
+export default mongoose;
