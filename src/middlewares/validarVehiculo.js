@@ -30,7 +30,7 @@ const validacionVehiculo = [
       "La categoria debe ser una de las siguientes opciones: Sedán, SUV, Camioneta, Deportivo",
     ),
   body("descripcion")
-    .optional({ checkFalsy: true })
+    .notEmpty()
     .isLength({ min: 10, max: 500 })
     .withMessage(
       "La descripción del vehiculo debe tener entre 10 y 500 caracteres",

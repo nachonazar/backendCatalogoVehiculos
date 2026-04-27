@@ -46,6 +46,7 @@ const vehiculoSchema = new Schema({
   },
   descripcion: {
     type: String,
+    required: true,
     minlength: 10,
     maxlength: 500,
     trim: true,
