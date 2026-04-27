@@ -31,6 +31,7 @@ const validacionVehiculo = [
     ),
   body("descripcion")
     .notEmpty()
+    .withMessage("La descripcion es un dato obligatorio")
     .isLength({ min: 10, max: 500 })
     .withMessage(
       "La descripción del vehiculo debe tener entre 10 y 500 caracteres",
