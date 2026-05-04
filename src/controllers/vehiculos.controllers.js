@@ -41,7 +41,10 @@ export const leerVehiculosPorId = async (req, res) => {
 
 export const editarVehiculosPorId = async (req, res) => {
   try {
-    const vehiculoModificado = await Vehiculo.findByIdAndUpdate(req.params.id, req.body);
+    const vehiculoModificado = await Vehiculo.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+    );
     if (!vehiculoModificado) {
       return res.status(404).json({ mensaje: "Vehiculo no encontrado" });
     }
