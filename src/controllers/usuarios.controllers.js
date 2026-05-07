@@ -21,9 +21,18 @@ export const login = async (req, res) => {
       return res.status(401).json({ mensaje: "Credenciales incorrectas" });
     }
     //3- generar el token
-    const token = await generarJWT(adminExistente.email, adminExistente._id);
+    const token = await generarJWT(
+      adminExistente.nombreAdmin,
+      adminExistente.email,
+    );
     //4- enviar la respuesta al frontend
-    res.status(200).json({ mensaje: "Login exitoso", token });
+    res
+      .status(200)
+      .json({
+        mensaje: "Login exitoso",
+        token,
+        nombreAdmin:adminExistente.nombreAdmin,
+      });
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: "Error al loguear el administrador" });

@@ -13,8 +13,8 @@ const verificarJWT = (req, res, next) => {
     //3- verificar si el token es valido
     const payload = jwt.verify(token, process.env.SECRET_JWT);
     // puedo extraer los datos del payload y almacenar en el req
+    req.nombreAdmin = payload.nombreAdmin;
     req.email = payload.email;
-    req._id = payload._id;
     next();
   } catch (error) {
     console.error(error);
