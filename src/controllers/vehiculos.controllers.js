@@ -17,6 +17,19 @@ export const leerVehiculos = async (req, res) => {
 
 export const crearVehiculo = async (req, res) => {
   try {
+    const { marca, modelo, anio } = req.body;
+
+    const vehiculoExistente = await Vehiculo.findOne({
+      marca: { $regex: new RegExp(`^${marca.trim()}$`, "i") },
+      modelo: { $regex: new RegExp(`^${modelo.trim()}$`, "i") },
+      anio: anio,
+    });
+    if (vehiculoExistente) {
+      return res.status(400).json({
+        mensaje: `El vehículo ${marca} ${modelo} año ${anio} ya se encuentra registrado en el catálogo.`,
+      });
+    }
+
     const nuevoVehiculo = new Vehiculo(req.body);
     await nuevoVehiculo.save();
     res.status(200).json({ mensaje: "Vehiculo creado correctamente" });
@@ -41,6 +54,21 @@ export const leerVehiculosPorId = async (req, res) => {
 
 export const editarVehiculosPorId = async (req, res) => {
   try {
+    const { id } = req.params;
+    const { marca, modelo, anio } = req.body;
+
+    const vehiculoExistente = await Vehiculo.findOne({
+      marca: { $regex: new RegExp(`^${marca.trim()}$`, "i") },
+      modelo: { $regex: new RegExp(`^${modelo.trim()}$`, "i") },
+      anio: anio,
+      _id: { $ne: id },
+    });
+    if (vehiculoExistente) {
+      return res.status(400).json({
+        mensaje: `El vehículo ${marca} ${modelo} año ${anio} ya se encuentra registrado en el catálogo.`,
+      });
+    }
+
     const vehiculoModificado = await Vehiculo.findByIdAndUpdate(
       req.params.id,
       req.body,
