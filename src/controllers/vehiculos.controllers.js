@@ -95,3 +95,28 @@ export const borrarVehiculosPorId = async (req, res) => {
     res.status(500).json({ mensaje: "Error al eliminar el vehiculo" });
   }
 };
+
+
+export const vehiculosPaginados = async (req, res) => {
+  try {
+    console.log(req.query)
+    const page = parseInt(req.query.page) || 1; //numero de pagina
+    const limit = parseInt(req.query.limit) || 10; //limit es la cantidad de vehiculos que quieres mostrar por página.
+    const skip = (page - 1) * limit; //la fórmula (page - 1) * limit te da el número de vehiculos que debes omitir (skip) para empezar en la página correcta.
+    console.log(page, limit, skip)
+    const [vehiculos, total] = await Promise.all([
+      Vehiculo.find().skip(skip).limit(limit), //obtiene los vehiculos de la página solicitada.
+      Vehiculo.countDocuments(), //cuenta el total de vehiculos en la colección.
+    ]);
+
+    res.status(200).json({
+      vehiculos,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: "Error al obtener vehiculos paginados" });
+  }
+};

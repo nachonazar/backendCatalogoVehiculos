@@ -6,6 +6,7 @@ import {
   leerVehiculosPorId,
   editarVehiculosPorId,
   borrarVehiculosPorId,
+  vehiculosPaginados,
 } from "../controllers/vehiculos.controllers.js";
 import validacionVehiculo from "../middlewares/validarVehiculo.js";
 import verificarJWT from "../middlewares/verificarJWT.js";
@@ -17,6 +18,7 @@ router
   .route("/")
   .get(leerVehiculos)
   .post([verificarJWT, validacionVehiculo], crearVehiculo);
+  router.route("/paginacion").get(vehiculosPaginados)
 router
   .route("/:id")
   .get(leerVehiculosPorId)
