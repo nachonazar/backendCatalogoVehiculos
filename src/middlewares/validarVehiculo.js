@@ -76,16 +76,7 @@ const validacionVehiculo = [
   body("disponible")
     .optional()
     .isBoolean()
-    .withMessage("El campo disponible debe ser booleano"),
-  body("imagenes")
-    .notEmpty()
-    .withMessage("La imagen es un dato obligatorio")
-    .isArray({ min: 1 })
-    .withMessage("Debe incluir al menos una imagen"),
-  body("imagenes.*")
-    .matches(/^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([\/#\w?=&.-]*)*\/?$/)
-    .withMessage("Cada imagen debe ser una URL válida"),
-  (req, res, next) => resultadoValidacion(req, res, next),
+    .withMessage("El campo disponible debe ser booleano")
 ];
 
 export default validacionVehiculo;
