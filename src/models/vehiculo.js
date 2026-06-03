@@ -51,17 +51,14 @@ const vehiculoSchema = new Schema({
     trim: true,
   },
   imagenes: {
-    type: [String],
+    type: String,
     required: true,
     validate: {
-      validator: function (v) {
-        if (!v || v.length === 0) return false;
-        const URL_PATTERN =
-          /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([\/#\w?=&.-]*)*\/?$/;
-        return v.every((url) => URL_PATTERN.test(url));
+      validator: (valor) => {
+        return /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?(\.(jpg|jpeg|png|webp))$/.test(
+          valor
+        );
       },
-      message:
-        "Debe incluir al menos una imagen y todas deben ser URLs válidas",
     },
   },
 });

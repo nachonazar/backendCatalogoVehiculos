@@ -1,3 +1,4 @@
+import subirImagenACloudinary from "../helpers/uploader.js";
 import Vehiculo from "../models/vehiculo.js";
 
 export const prueba = (req, res) => {
@@ -30,9 +31,23 @@ export const crearVehiculo = async (req, res) => {
       });
     }
 
-    const nuevoVehiculo = new Vehiculo(req.body);
+    let imagenUrl = "";
+     if (req.file) {
+      const resultado = await subirImagenACloudinary(req.file.buffer);
+      console.log(resultado)
+      imagenUrl = resultado.secure_url;
+    } else {
+      imagenUrl =
+        "https://images.pexels.com/photos/32907356/pexels-photo-32907356.jpeg";
+    }
+
+    const nuevoVehiculo = new Vehiculo({
+      ...req.body,
+      imagenes: imagenUrl,
+    });
+
     await nuevoVehiculo.save();
-    res.status(200).json({ mensaje: "Vehiculo creado correctamente" });
+    res.status(201).json({ mensaje: "Vehiculo creado correctamente" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: "Error al crear el vehiculo" });

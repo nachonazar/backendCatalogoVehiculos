@@ -20,7 +20,7 @@ router
   .route("/")
   .get(leerVehiculos)
   .post(
-    [verificarJWT, upload.single("imagen"), errorMulter, validacionVehiculo],
+    [verificarJWT, upload.single("imagenes"), errorMulter, validacionVehiculo],
     crearVehiculo,
   );
 router.route("/paginacion").get(vehiculosPaginados);
