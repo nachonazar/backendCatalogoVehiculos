@@ -27,7 +27,10 @@ router.route("/paginacion").get(vehiculosPaginados);
 router
   .route("/:id")
   .get(leerVehiculosPorId)
-  .put([verificarJWT, validacionVehiculo], editarVehiculosPorId)
+  .put(
+    [verificarJWT, upload.single("imagenes"), errorMulter, validacionVehiculo],
+    editarVehiculosPorId,
+  )
   .delete(verificarJWT, borrarVehiculosPorId);
 
 export default router;

@@ -18,23 +18,10 @@ export const leerVehiculos = async (req, res) => {
 
 export const crearVehiculo = async (req, res) => {
   try {
-    const { marca, modelo, anio } = req.body;
-
-    const vehiculoExistente = await Vehiculo.findOne({
-      marca: { $regex: new RegExp(`^${marca.trim()}$`, "i") },
-      modelo: { $regex: new RegExp(`^${modelo.trim()}$`, "i") },
-      anio: anio,
-    });
-    if (vehiculoExistente) {
-      return res.status(400).json({
-        mensaje: `El vehículo ${marca} ${modelo} año ${anio} ya se encuentra registrado en el catálogo.`,
-      });
-    }
-
     let imagenUrl = "";
-     if (req.file) {
+    if (req.file) {
       const resultado = await subirImagenACloudinary(req.file.buffer);
-      console.log(resultado)
+      console.log(resultado);
       imagenUrl = resultado.secure_url;
     } else {
       imagenUrl =
@@ -69,28 +56,22 @@ export const leerVehiculosPorId = async (req, res) => {
 
 export const editarVehiculosPorId = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { marca, modelo, anio } = req.body;
-
-    const vehiculoExistente = await Vehiculo.findOne({
-      marca: { $regex: new RegExp(`^${marca.trim()}$`, "i") },
-      modelo: { $regex: new RegExp(`^${modelo.trim()}$`, "i") },
-      anio: anio,
-      _id: { $ne: id },
-    });
-    if (vehiculoExistente) {
-      return res.status(400).json({
-        mensaje: `El vehículo ${marca} ${modelo} año ${anio} ya se encuentra registrado en el catálogo.`,
-      });
-    }
-
-    const vehiculoModificado = await Vehiculo.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-    );
+    const vehiculoModificado = await Vehiculo.findById(req.params.id);
     if (!vehiculoModificado) {
       return res.status(404).json({ mensaje: "Vehiculo no encontrado" });
     }
+    let imagenUrl = vehiculoModificado.imagenes;
+
+    if (req.file) {
+      const resultado = await subirImagenACloudinary(req.file.buffer);
+      imagenUrl = resultado.secure_url;
+    }
+
+    await Vehiculo.findByIdAndUpdate(req.params.id, {
+      ...req.body,
+      imagenes: imagenUrl,
+    });
+
     res.status(200).json({ mensaje: "Vehiculo actualizado correctamente" });
   } catch (error) {
     console.error(error);
