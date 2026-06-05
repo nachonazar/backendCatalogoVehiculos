@@ -18,19 +18,21 @@ export const leerVehiculos = async (req, res) => {
 
 export const crearVehiculo = async (req, res) => {
   try {
-    let imagenUrl = "";
-    if (req.file) {
-      const resultado = await subirImagenACloudinary(req.file.buffer);
-      console.log(resultado);
-      imagenUrl = resultado.secure_url;
+    let imagenesUrl = [];
+    if (req.files && req.files.length > 0) {
+      const resultado = await Promise.all(
+        req.files.map((file) => subirImagenACloudinary(file.buffer)),
+      );
+      imagenesUrl = resultado.map((r) => r.secure_url);
     } else {
-      imagenUrl =
-        "https://images.pexels.com/photos/32907356/pexels-photo-32907356.jpeg";
+      imagenesUrl = [
+        "https://images.pexels.com/photos/32907356/pexels-photo-32907356.jpeg",
+      ];
     }
 
     const nuevoVehiculo = new Vehiculo({
       ...req.body,
-      imagenes: imagenUrl,
+      imagenes: imagenesUrl,
     });
 
     await nuevoVehiculo.save();
@@ -60,17 +62,37 @@ export const editarVehiculosPorId = async (req, res) => {
     if (!vehiculoModificado) {
       return res.status(404).json({ mensaje: "Vehiculo no encontrado" });
     }
-    let imagenUrl = vehiculoModificado.imagenes;
 
-    if (req.file) {
-      const resultado = await subirImagenACloudinary(req.file.buffer);
-      imagenUrl = resultado.secure_url;
+    let imagenesUrl = vehiculoModificado.imagenes;
+
+    if (req.files && req.files.length > 0) {
+      // subir archivos nuevos a cloudinary
+      const resultados = await Promise.all(
+        req.files.map((file) => subirImagenACloudinary(file.buffer))
+      );
+      imagenesUrl = resultados.map((r) => r.secure_url);
+    } else if (req.body.imagenesExistentes) {
+      // mantener solo las URLs que el usuario no borró
+      imagenesUrl = Array.isArray(req.body.imagenesExistentes)
+        ? req.body.imagenesExistentes
+        : [req.body.imagenesExistentes];
     }
 
-    await Vehiculo.findByIdAndUpdate(req.params.id, {
-      ...req.body,
-      imagenes: imagenUrl,
-    });
+    await Vehiculo.findByIdAndUpdate(
+      req.params.id,
+      {
+        marca: req.body.marca,
+        modelo: req.body.modelo,
+        anio: Number(req.body.anio),
+        categoria: req.body.categoria,
+        precio: Number(req.body.precio),
+        km: Number(req.body.km),
+        disponible: req.body.disponible === "true",
+        descripcion: req.body.descripcion,
+        imagenes: imagenesUrl,
+      },
+      { new: true, runValidators: true },
+    );
 
     res.status(200).json({ mensaje: "Vehiculo actualizado correctamente" });
   } catch (error) {

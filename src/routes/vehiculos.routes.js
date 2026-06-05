@@ -20,7 +20,7 @@ router
   .route("/")
   .get(leerVehiculos)
   .post(
-    [verificarJWT, upload.single("imagenes"), errorMulter, validacionVehiculo],
+    [verificarJWT, upload.array("imagenes"), errorMulter, validacionVehiculo],
     crearVehiculo,
   );
 router.route("/paginacion").get(vehiculosPaginados);
@@ -28,7 +28,7 @@ router
   .route("/:id")
   .get(leerVehiculosPorId)
   .put(
-    [verificarJWT, upload.single("imagenes"), errorMulter, validacionVehiculo],
+    [verificarJWT, upload.array("imagenes"), errorMulter, validacionVehiculo],
     editarVehiculosPorId,
   )
   .delete(verificarJWT, borrarVehiculosPorId);
