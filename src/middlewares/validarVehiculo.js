@@ -1,5 +1,6 @@
 import { body } from "express-validator";
 import resultadoValidacion from "./resultadoValidacion.js";
+import Vehiculo from "../models/vehiculo.js";
 
 const validacionVehiculo = [
   body("marca")
@@ -21,7 +22,21 @@ const validacionVehiculo = [
     .withMessage(
       "El modelo solo puede contener letras, números, espacios, guiones, puntos y paréntesis",
     )
-    .trim(),
+    .trim()
+    .custom(async (valor, { req }) => {
+      const marca = req.body.marca;
+      const vehiculoExistente = await Vehiculo.findOne({
+        marca,
+        modelo: valor,
+        anio: req.body.anio,
+      });
+      //no existe ningun vehiculo con el nombre "valor"
+      if (!vehiculoExistente) return true;
+      //verificar si es un PUT, chequear si el id del vehiculoExistente es el mismo del vehiculo que estoy editando
+      if (req.params?.id && vehiculoExistente._id.toString() === req.params.id)
+        return true;
+      throw new Error("Ya existe un vehiculo con esa marca, modelo y año");
+    }),
   body("categoria")
     .notEmpty()
     .withMessage("La categoria es un dato obligatorio")
@@ -76,7 +91,8 @@ const validacionVehiculo = [
   body("disponible")
     .optional()
     .isBoolean()
-    .withMessage("El campo disponible debe ser booleano")
+    .withMessage("El campo disponible debe ser booleano"),
+  (req, res, next) => resultadoValidacion(req, res, next),
 ];
 
 export default validacionVehiculo;
