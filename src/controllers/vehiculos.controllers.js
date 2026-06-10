@@ -58,6 +58,8 @@ export const leerVehiculosPorId = async (req, res) => {
 
 export const editarVehiculosPorId = async (req, res) => {
   try {
+    console.log("req.files:", req.files);
+    console.log("req.body.imagenesExistentes:", req.body.imagenesExistentes);
     const vehiculoModificado = await Vehiculo.findById(req.params.id);
     if (!vehiculoModificado) {
       return res.status(404).json({ mensaje: "Vehiculo no encontrado" });
@@ -66,13 +68,19 @@ export const editarVehiculosPorId = async (req, res) => {
     let imagenesUrl = vehiculoModificado.imagenes;
 
     if (req.files && req.files.length > 0) {
-      // subir archivos nuevos a cloudinary
       const resultados = await Promise.all(
-        req.files.map((file) => subirImagenACloudinary(file.buffer))
+        req.files.map((file) => subirImagenACloudinary(file.buffer)),
       );
-      imagenesUrl = resultados.map((r) => r.secure_url);
+      const nuevasUrls = resultados.map((r) => r.secure_url);
+
+      const existentes = req.body.imagenesExistentes
+        ? Array.isArray(req.body.imagenesExistentes)
+          ? req.body.imagenesExistentes
+          : [req.body.imagenesExistentes]
+        : [];
+
+      imagenesUrl = [...existentes, ...nuevasUrls];
     } else if (req.body.imagenesExistentes) {
-      // mantener solo las URLs que el usuario no borró
       imagenesUrl = Array.isArray(req.body.imagenesExistentes)
         ? req.body.imagenesExistentes
         : [req.body.imagenesExistentes];
