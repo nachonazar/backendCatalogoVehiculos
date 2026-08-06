@@ -1,28 +1,32 @@
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import "../db/config.js"
+import { conectarDB } from "../db/config.js";
 
 export default class Server {
   constructor() {
     this.app = express();
     this.port = process.env.PORT || 3051;
+    this.conectarBaseDeDatos();
     this.middlewares();
   }
 
-  //agregar metodos
-  //middlewares
-  middlewares() {
-    this.app.use(cors()); //permite tener conexiones remotas
-    this.app.use(express.json()); //interpreta los datos que llegan en la solicitud
-    this.app.use(morgan("dev"));
-    const __dirname = dirname(fileURLToPath(import.meta.url));
-    console.log(`${__dirname}/../public`);
+  async conectarBaseDeDatos() {
+    try {
+      await conectarDB();
+    } catch (error) {
+      console.error(
+        "No se pudo establecer la conexión inicial a la base de datos",
+      );
+    }
   }
 
-  //escuchar el puerto
+  middlewares() {
+    this.app.use(cors());
+    this.app.use(express.json());
+    this.app.use(morgan("dev"));
+  }
+
   listen() {
     this.app.listen(this.port, () => {
       console.info(
