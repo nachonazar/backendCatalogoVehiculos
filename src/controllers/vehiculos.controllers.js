@@ -1,7 +1,7 @@
 import subirImagenACloudinary from "../helpers/uploader.js";
 import Vehiculo from "../models/vehiculo.js";
 
-export const leerVehiculos = async (req, res) => {
+export const leerVehiculos = async (req, res, next) => {
   try {
     const query = {};
     if (req.query.disponible)
@@ -24,7 +24,7 @@ export const leerVehiculos = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const [vehiculos, total] = await Promise.all([
-      Vehiculo.find(query).skip(skip).limit(limit),
+      Vehiculo.find(query).sort({ _id: -1 }).skip(skip).limit(limit),
       Vehiculo.countDocuments(query),
     ]);
 
@@ -35,12 +35,11 @@ export const leerVehiculos = async (req, res) => {
       totalPages: Math.ceil(total / limit) || 1,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: "Error al leer los vehiculos" });
+    next(error);
   }
 };
 
-export const crearVehiculo = async (req, res) => {
+export const crearVehiculo = async (req, res, next) => {
   try {
     let imagenesUrl = [];
     if (req.files && req.files.length > 0) {
@@ -65,12 +64,11 @@ export const crearVehiculo = async (req, res) => {
     await nuevoVehiculo.save();
     res.status(201).json({ mensaje: "Vehiculo creado correctamente" });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: "Error al crear el vehiculo" });
+    next(error);
   }
 };
 
-export const leerVehiculosPorId = async (req, res) => {
+export const leerVehiculosPorId = async (req, res, next) => {
   try {
     const vehiculoBuscado = await Vehiculo.findById(req.params.id);
     if (!vehiculoBuscado) {
@@ -78,12 +76,11 @@ export const leerVehiculosPorId = async (req, res) => {
     }
     res.status(200).json(vehiculoBuscado);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: "Error al leer el vehiculo" });
+    next(error);
   }
 };
 
-export const editarVehiculosPorId = async (req, res) => {
+export const editarVehiculosPorId = async (req, res, next) => {
   try {
     const vehiculoModificado = await Vehiculo.findById(req.params.id);
     if (!vehiculoModificado) {
@@ -129,12 +126,11 @@ export const editarVehiculosPorId = async (req, res) => {
 
     res.status(200).json({ mensaje: "Vehiculo actualizado correctamente" });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: "Error al editar el vehiculo" });
+    next(error);
   }
 };
 
-export const borrarVehiculosPorId = async (req, res) => {
+export const borrarVehiculosPorId = async (req, res, next) => {
   try {
     const vehiculoBorrado = await Vehiculo.findByIdAndDelete(req.params.id);
     if (!vehiculoBorrado) {
@@ -142,7 +138,6 @@ export const borrarVehiculosPorId = async (req, res) => {
     }
     res.status(200).json({ mensaje: "Vehiculo eliminado correctamente" });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: "Error al eliminar el vehiculo" });
+    next(error);
   }
 };

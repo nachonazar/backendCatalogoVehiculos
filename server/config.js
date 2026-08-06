@@ -49,6 +49,21 @@ export default class Server {
     this.app.use(morgan("dev"));
   }
 
+  manejoDeErrores() {
+    this.app.use((req, res, next) => {
+      res.status(404).json({ mensaje: "La ruta solicitada no existe" });
+    });
+
+    this.app.use((err, req, res, next) => {
+      console.error("Error capturado por el middleware central:", err);
+
+      const statusCode = err.status || 500;
+      const mensaje = err.message || "Error interno del servidor";
+
+      res.status(statusCode).json({ mensaje });
+    });
+  }
+
   listen() {
     this.app.listen(this.port, () => {
       console.info(
