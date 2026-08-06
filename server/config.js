@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
 import morgan from "morgan";
 import { conectarDB } from "../db/config.js";
 
@@ -22,6 +23,13 @@ export default class Server {
   }
 
   middlewares() {
+    this.app.use(
+      helmet({
+        crossOriginResourcePolicy: { policy: "cross-origin" },
+        crossOriginEmbedderPolicy: false,
+      }),
+    );
+
     const origenesPermitidos = [
       "https://catalogos-vehiculos.netlify.app",
       "http://localhost:5173",
