@@ -4,11 +4,21 @@ import Vehiculo from "../models/vehiculo.js";
 export const leerVehiculos = async (req, res, next) => {
   try {
     const query = {};
-    if (req.query.disponible)
+
+    if (req.query.disponible) {
       query.disponible = req.query.disponible === "true";
-    if (req.query.categoria) query.categoria = req.query.categoria;
-    if (req.query.termino) {
-      const regex = new RegExp(req.query.termino, "i");
+    }
+
+    if (typeof req.query.categoria === "string") {
+      query.categoria = req.query.categoria;
+    }
+
+    if (typeof req.query.termino === "string") {
+      const terminoSeguro = req.query.termino.replace(
+        /[.*+?^${}()|[\]\\]/g,
+        "\\$&",
+      );
+      const regex = new RegExp(terminoSeguro, "i");
       query.$or = [{ marca: regex }, { modelo: regex }];
     }
 

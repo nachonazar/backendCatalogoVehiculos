@@ -7,6 +7,10 @@ import { conectarDB } from "../db/config.js";
 export default class Server {
   constructor() {
     this.app = express();
+
+    // FIX: Configuración para que el Rate Limiter funcione correctamente detrás de Vercel
+    this.app.set("trust proxy", 1);
+
     this.port = process.env.PORT || 3051;
     this.conectarBaseDeDatos();
     this.middlewares();
@@ -56,6 +60,11 @@ export default class Server {
 
     this.app.use((err, req, res, next) => {
       console.error("Error capturado por el middleware central:", err);
+
+      // FIX: Si Mongoose tira un CastError (ID mal formado), mandamos 400 en vez de 500
+      if (err.name === "CastError") {
+        return res.status(400).json({ mensaje: "Formato de ID inválido" });
+      }
 
       const statusCode = err.status || 500;
       const mensaje = err.message || "Error interno del servidor";
