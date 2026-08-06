@@ -24,10 +24,6 @@ export const crearVehiculo = async (req, res) => {
         req.files.map((file) => subirImagenACloudinary(file.buffer)),
       );
       imagenesUrl = resultado.map((r) => r.secure_url);
-    } else {
-      imagenesUrl = [
-        "https://images.pexels.com/photos/32907356/pexels-photo-32907356.jpeg",
-      ];
     }
 
     const nuevoVehiculo = new Vehiculo({
