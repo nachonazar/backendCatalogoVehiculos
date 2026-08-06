@@ -22,7 +22,21 @@ export default class Server {
   }
 
   middlewares() {
-    this.app.use(cors());
+    const origenesPermitidos = [
+      "https://catalogos-vehiculos.netlify.app",
+      "http://localhost:5173",
+    ];
+
+    this.app.use(
+      cors({
+        origin: (origin, callback) => {
+          if (!origin || origenesPermitidos.includes(origin)) {
+            return callback(null, true);
+          }
+          callback(new Error("No permitido por CORS"));
+        },
+      }),
+    );
     this.app.use(express.json());
     this.app.use(morgan("dev"));
   }
