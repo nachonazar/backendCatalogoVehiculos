@@ -3,26 +3,37 @@ import Vehiculo from "../models/vehiculo.js";
 
 export const leerVehiculos = async (req, res) => {
   try {
-    if (req.query.page || req.query.limit) {
-      const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(req.query.limit) || 10;
-      const skip = (page - 1) * limit;
-
-      const [vehiculos, total] = await Promise.all([
-        Vehiculo.find().skip(skip).limit(limit),
-        Vehiculo.countDocuments(),
-      ]);
-
-      return res.status(200).json({
-        vehiculos,
-        total,
-        page,
-        totalPages: Math.ceil(total / limit),
-      });
+    const query = {};
+    if (req.query.disponible)
+      query.disponible = req.query.disponible === "true";
+    if (req.query.categoria) query.categoria = req.query.categoria;
+    if (req.query.termino) {
+      const regex = new RegExp(req.query.termino, "i");
+      query.$or = [{ marca: regex }, { modelo: regex }];
     }
 
-    const listaVehiculos = await Vehiculo.find();
-    res.status(200).json(listaVehiculos);
+    if (req.query.paginar === "false") {
+      const vehiculos = await Vehiculo.find(query).sort({ _id: -1 });
+      return res
+        .status(200)
+        .json({ vehiculos, total: vehiculos.length, page: 1, totalPages: 1 });
+    }
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const [vehiculos, total] = await Promise.all([
+      Vehiculo.find(query).skip(skip).limit(limit),
+      Vehiculo.countDocuments(query),
+    ]);
+
+    return res.status(200).json({
+      vehiculos,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit) || 1,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: "Error al leer los vehiculos" });
@@ -39,7 +50,6 @@ export const crearVehiculo = async (req, res) => {
       imagenesUrl = resultado.map((r) => r.secure_url);
     }
 
-    // Construcción explícita para evitar vulnerabilidad de Mass Assignment
     const nuevoVehiculo = new Vehiculo({
       marca: req.body.marca,
       modelo: req.body.modelo,
