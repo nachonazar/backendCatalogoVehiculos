@@ -3,6 +3,10 @@ import Vehiculo from "../models/vehiculo.js";
 
 export const leerVehiculos = async (req, res, next) => {
   try {
+    res.set(
+      "Cache-Control",
+      "public, max-age=0, s-maxage=60, stale-while-revalidate=120",
+    );
     const query = {};
 
     if (req.query.disponible) {
