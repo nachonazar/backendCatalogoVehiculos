@@ -30,9 +30,7 @@ const validacionVehiculo = [
         modelo: valor,
         anio: req.body.anio,
       });
-      //no existe ningun vehiculo con el nombre "valor"
       if (!vehiculoExistente) return true;
-      //verificar si es un PUT, chequear si el id del vehiculoExistente es el mismo del vehiculo que estoy editando
       if (req.params?.id && vehiculoExistente._id.toString() === req.params.id)
         return true;
       throw new Error("Ya existe un vehiculo con esa marca, modelo y año");

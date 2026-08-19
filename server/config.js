@@ -8,7 +8,6 @@ export default class Server {
   constructor() {
     this.app = express();
 
-    // FIX: Configuración para que el Rate Limiter funcione correctamente detrás de Vercel
     this.app.set("trust proxy", 1);
 
     this.port = process.env.PORT || 3051;
@@ -37,6 +36,8 @@ export default class Server {
     const origenesPermitidos = [
       "https://catalogos-vehiculos.netlify.app",
       "http://localhost:5173",
+      "https://automotorestucuman.com.ar",
+      "https://www.automotorestucuman.com.ar",
     ];
 
     this.app.use(
@@ -61,7 +62,6 @@ export default class Server {
     this.app.use((err, req, res, next) => {
       console.error("Error capturado por el middleware central:", err);
 
-      // FIX: Si Mongoose tira un CastError (ID mal formado), mandamos 400 en vez de 500
       if (err.name === "CastError") {
         return res.status(400).json({ mensaje: "Formato de ID inválido" });
       }
